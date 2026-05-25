@@ -20,10 +20,10 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
   return (
     <div className="grid grid-cols-2" style={{ marginBottom: 'var(--spacing-xl)' }}>
       
-      <div className="card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
-          <h3 style={{ fontSize: '1.125rem', fontWeight: 600 }}>Recent Calls</h3>
-          <button style={{ background: 'transparent', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', fontSize: '0.875rem' }}>View All</button>
+      <div className="card stagger-6">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-lg)' }}>
+          <h3 style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Recent Calls</h3>
+          <button style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.8125rem', transition: 'color var(--transition-fast)' }} onMouseOver={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseOut={e => e.currentTarget.style.color = 'var(--text-muted)'}>View All</button>
         </div>
         <div className="table-container">
           <table>
@@ -37,8 +37,8 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
             <tbody>
               {recentCalls.map((call, i) => (
                 <tr key={call?.id || `call-${i}`}>
-                  <td>{call?.created_at ? format(new Date(call.created_at), 'MMM dd, HH:mm') : 'N/A'}</td>
-                  <td style={{ color: 'var(--text-primary)' }}>{call?.customer_phone || 'N/A'}</td>
+                  <td style={{ color: 'var(--text-secondary)' }}>{call?.created_at ? format(new Date(call.created_at), 'MMM dd, HH:mm') : 'N/A'}</td>
+                  <td style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{call?.customer_phone || 'N/A'}</td>
                   <td>
                     <OutcomeBadge outcome={call?.call_outcome || 'unknown'} />
                   </td>
@@ -46,7 +46,7 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
               ))}
               {recentCalls.length === 0 && (
                 <tr>
-                  <td colSpan={3} style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem' }}>No recent calls</td>
+                  <td colSpan={3} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2.5rem' }}>No recent calls</td>
                 </tr>
               )}
             </tbody>
@@ -54,10 +54,10 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
         </div>
       </div>
 
-      <div className="card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
-          <h3 style={{ fontSize: '1.125rem', fontWeight: 600 }}>Recent Leads</h3>
-          <button style={{ background: 'transparent', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', fontSize: '0.875rem' }}>View All</button>
+      <div className="card stagger-7">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-lg)' }}>
+          <h3 style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Recent Leads</h3>
+          <button style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.8125rem', transition: 'color var(--transition-fast)' }} onMouseOver={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseOut={e => e.currentTarget.style.color = 'var(--text-muted)'}>View All</button>
         </div>
         <div className="table-container">
           <table>
@@ -73,7 +73,7 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
               {recentLeads.map((lead, i) => (
                 <tr key={lead?.id || `lead-${i}`}>
                   <td style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{lead?.customer_name || 'Unknown'}</td>
-                  <td>{lead?.created_at ? format(new Date(lead.created_at), 'MMM dd') : 'N/A'}</td>
+                  <td style={{ color: 'var(--text-secondary)' }}>{lead?.created_at ? format(new Date(lead.created_at), 'MMM dd') : 'N/A'}</td>
                   <td>
                     {lead?.qualified === true ? (
                       <span className="badge badge-success">Yes</span>
@@ -86,7 +86,7 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
               ))}
               {recentLeads.length === 0 && (
                 <tr>
-                  <td colSpan={4} style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem' }}>No recent leads</td>
+                  <td colSpan={4} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2.5rem' }}>No recent leads</td>
                 </tr>
               )}
             </tbody>
@@ -94,10 +94,10 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
         </div>
       </div>
 
-      <div className="card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
-          <h3 style={{ fontSize: '1.125rem', fontWeight: 600 }}>Upcoming Appointments</h3>
-          <button style={{ background: 'transparent', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', fontSize: '0.875rem' }}>View All</button>
+      <div className="card stagger-1">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-lg)' }}>
+          <h3 style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Upcoming Appointments</h3>
+          <button style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.8125rem', transition: 'color var(--transition-fast)' }} onMouseOver={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseOut={e => e.currentTarget.style.color = 'var(--text-muted)'}>View All</button>
         </div>
         <div className="table-container">
           <table>
@@ -112,13 +112,13 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
               {upcomingAppointments.map((apt, i) => (
                 <tr key={apt?.id || `apt-${i}`}>
                   <td style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{apt?.customer_name || 'Unknown'}</td>
-                  <td>{apt?.appointment_datetime ? format(new Date(apt.appointment_datetime), 'MMM dd, HH:mm') : 'N/A'}</td>
+                  <td style={{ color: 'var(--text-secondary)' }}>{apt?.appointment_datetime ? format(new Date(apt.appointment_datetime), 'MMM dd, HH:mm') : 'N/A'}</td>
                   <td><span className="badge badge-primary">{apt?.status || 'upcoming'}</span></td>
                 </tr>
               ))}
               {upcomingAppointments.length === 0 && (
                 <tr>
-                  <td colSpan={3} style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem' }}>No upcoming appointments</td>
+                  <td colSpan={3} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2.5rem' }}>No upcoming appointments</td>
                 </tr>
               )}
             </tbody>
@@ -126,10 +126,10 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
         </div>
       </div>
 
-      <div className="card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
-          <h3 style={{ fontSize: '1.125rem', fontWeight: 600 }}>Open Follow-ups</h3>
-          <button style={{ background: 'transparent', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', fontSize: '0.875rem' }}>View All</button>
+      <div className="card stagger-2">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-lg)' }}>
+          <h3 style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Open Follow-ups</h3>
+          <button style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.8125rem', transition: 'color var(--transition-fast)' }} onMouseOver={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseOut={e => e.currentTarget.style.color = 'var(--text-muted)'}>View All</button>
         </div>
         <div className="table-container">
           <table>
@@ -144,13 +144,13 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
               {openFollowups.map((fup, i) => (
                 <tr key={fup?.id || `fup-${i}`}>
                   <td style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{fup?.customer_name || 'Unknown'}</td>
-                  <td style={{ textTransform: 'capitalize' }}>{(fup?.followup_type || 'unknown').replace('_', ' ')}</td>
+                  <td style={{ textTransform: 'capitalize', color: 'var(--text-secondary)' }}>{(fup?.followup_type || 'unknown').replace('_', ' ')}</td>
                   <td><span className="badge badge-warning">{fup?.status || 'pending'}</span></td>
                 </tr>
               ))}
               {openFollowups.length === 0 && (
                 <tr>
-                  <td colSpan={3} style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem' }}>No pending follow-ups</td>
+                  <td colSpan={3} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2.5rem' }}>No pending follow-ups</td>
                 </tr>
               )}
             </tbody>

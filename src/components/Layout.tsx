@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Users, Calendar, PhoneCall, Settings, LogOut } from 'lucide-react';
+import { Settings, LogOut } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -7,50 +7,63 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <div className="app-container">
-      <aside className="sidebar">
-        <div style={{ marginBottom: 'var(--spacing-xl)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'var(--primary-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold' }}>
-            A
+    <div className="app-container" style={{ flexDirection: 'column', minHeight: '100vh' }}>
+      
+      {/* N9 Edge-aligned minimal nav */}
+      <header style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: 'var(--spacing-md) var(--spacing-2xl)',
+        borderBottom: '1px solid var(--border-color)',
+        backgroundColor: 'var(--bg-surface)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xl)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'var(--primary-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', fontWeight: 'bold', fontSize: '0.875rem' }}>
+              A
+            </div>
+            <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>Alyson AI</h2>
           </div>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Alyson AI</h2>
+          
+          <nav style={{ display: 'flex', gap: 'var(--spacing-md)' }}>
+            <NavItem label="Overview" active />
+            <NavItem label="Call Logs" />
+            <NavItem label="Leads" />
+            <NavItem label="Appointments" />
+          </nav>
         </div>
-        
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)', flex: 1 }}>
-          <NavItem icon={<LayoutDashboard size={20} />} label="Overview" active />
-          <NavItem icon={<PhoneCall size={20} />} label="Call Logs" />
-          <NavItem icon={<Users size={20} />} label="Leads" />
-          <NavItem icon={<Calendar size={20} />} label="Appointments" />
-        </nav>
-        
-        <div style={{ marginTop: 'auto', borderTop: '1px solid var(--border-color)', paddingTop: 'var(--spacing-md)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
-          <NavItem icon={<Settings size={20} />} label="Settings" />
-          <NavItem icon={<LogOut size={20} />} label="Log Out" />
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
+          <button style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', transition: 'color var(--transition-fast)' }} onMouseOver={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseOut={e => e.currentTarget.style.color = 'var(--text-secondary)'}>
+            <Settings size={18} />
+          </button>
+          <div style={{ width: '1px', height: '16px', backgroundColor: 'var(--border-color)' }}></div>
+          <button style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', fontWeight: 500, transition: 'color var(--transition-fast)' }} onMouseOver={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseOut={e => e.currentTarget.style.color = 'var(--text-secondary)'}>
+            Log Out <LogOut size={16} />
+          </button>
         </div>
-      </aside>
+      </header>
       
       <main className="main-content">
-        {children}
+        <div style={{ maxWidth: '1440px', margin: '0 auto', width: '100%' }}>
+          {children}
+        </div>
       </main>
     </div>
   );
 };
 
-const NavItem = ({ icon, label, active = false }: { icon: React.ReactNode, label: string, active?: boolean }) => (
+const NavItem = ({ label, active = false }: { label: string, active?: boolean }) => (
   <button style={{
-    display: 'flex',
-    alignItems: 'center',
-    gap: 'var(--spacing-md)',
-    padding: 'var(--spacing-sm) var(--spacing-md)',
-    borderRadius: 'var(--radius-md)',
-    background: active ? 'var(--bg-surface-elevated)' : 'transparent',
-    color: active ? 'var(--primary-color)' : 'var(--text-secondary)',
+    background: 'transparent',
+    color: active ? 'var(--text-primary)' : 'var(--text-secondary)',
     border: 'none',
     cursor: 'pointer',
-    textAlign: 'left',
     fontSize: '0.875rem',
     fontWeight: 500,
-    transition: 'all var(--transition-fast)'
+    transition: 'color var(--transition-fast)',
+    padding: 'var(--spacing-xs) 0',
   }}
   onMouseEnter={(e) => {
     if (!active) e.currentTarget.style.color = 'var(--text-primary)';
@@ -59,7 +72,6 @@ const NavItem = ({ icon, label, active = false }: { icon: React.ReactNode, label
     if (!active) e.currentTarget.style.color = 'var(--text-secondary)';
   }}
   >
-    {icon}
     {label}
   </button>
 );

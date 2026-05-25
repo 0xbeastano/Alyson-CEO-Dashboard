@@ -52,52 +52,52 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ data }) => {
   }, [followups]);
 
   return (
-    <div className="grid grid-cols-2" style={{ marginBottom: 'var(--spacing-xl)' }}>
-      <div className="card">
-        <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: 'var(--spacing-lg)' }}>Volume Trends (7 Days)</h3>
+    <div className="grid grid-cols-2" style={{ marginBottom: 'var(--spacing-lg)' }}>
+      <div className="card stagger-3">
+        <h3 style={{ fontSize: '1rem', fontWeight: 500, marginBottom: 'var(--spacing-xl)', color: 'var(--text-secondary)' }}>Volume Trends (7 Days)</h3>
         <div className="chart-container">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={volumeData}>
               <defs>
                 <linearGradient id="colorCalls" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--primary-color)" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="var(--primary-color)" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="var(--text-primary)" stopOpacity={0.2}/>
+                  <stop offset="95%" stopColor="var(--text-primary)" stopOpacity={0}/>
                 </linearGradient>
                 <linearGradient id="colorLeads" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--success-color)" stopOpacity={0.3}/>
+                  <stop offset="5%" stopColor="var(--success-color)" stopOpacity={0.2}/>
                   <stop offset="95%" stopColor="var(--success-color)" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
-              <XAxis dataKey="name" stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
-              <YAxis stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
+              <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} dy={10} />
+              <YAxis stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} dx={-10} />
               <Tooltip 
-                contentStyle={{ backgroundColor: 'var(--bg-surface-elevated)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
+                contentStyle={{ backgroundColor: 'var(--bg-surface-elevated)', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: 'var(--shadow-md)' }}
                 itemStyle={{ color: 'var(--text-primary)' }}
               />
-              <Legend />
-              <Area type="monotone" dataKey="calls" stroke="var(--primary-color)" fillOpacity={1} fill="url(#colorCalls)" />
+              <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', color: 'var(--text-secondary)' }} />
+              <Area type="monotone" dataKey="calls" stroke="var(--text-primary)" fillOpacity={1} fill="url(#colorCalls)" />
               <Area type="monotone" dataKey="leads" stroke="var(--success-color)" fillOpacity={1} fill="url(#colorLeads)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      <div className="card">
-        <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: 'var(--spacing-lg)' }}>Call Outcomes</h3>
+      <div className="card stagger-4">
+        <h3 style={{ fontSize: '1rem', fontWeight: 500, marginBottom: 'var(--spacing-xl)', color: 'var(--text-secondary)' }}>Call Outcomes</h3>
         <div className="chart-container">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={outcomesData} layout="vertical" margin={{ top: 0, right: 0, left: 30, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" horizontal={false} />
-              <XAxis type="number" stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
-              <YAxis dataKey="name" type="category" stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" horizontal={false} />
+              <XAxis type="number" stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} />
+              <YAxis dataKey="name" type="category" stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} />
               <Tooltip 
-                cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                contentStyle={{ backgroundColor: 'var(--bg-surface-elevated)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
+                cursor={{ fill: 'rgba(255,255,255,0.02)' }}
+                contentStyle={{ backgroundColor: 'var(--bg-surface-elevated)', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: 'var(--shadow-md)' }}
               />
               <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                 {outcomesData.map((_, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} opacity={0.8} />
                 ))}
               </Bar>
             </BarChart>
@@ -105,26 +105,26 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ data }) => {
         </div>
       </div>
 
-      <div className="card">
-        <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: 'var(--spacing-lg)' }}>Appointments (7 Days)</h3>
+      <div className="card stagger-5">
+        <h3 style={{ fontSize: '1rem', fontWeight: 500, marginBottom: 'var(--spacing-xl)', color: 'var(--text-secondary)' }}>Appointments (7 Days)</h3>
         <div className="chart-container">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={volumeData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
-              <XAxis dataKey="name" stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
-              <YAxis stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
+              <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} dy={10} />
+              <YAxis stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} dx={-10} />
               <Tooltip 
-                cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                contentStyle={{ backgroundColor: 'var(--bg-surface-elevated)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
+                cursor={{ fill: 'rgba(255,255,255,0.02)' }}
+                contentStyle={{ backgroundColor: 'var(--bg-surface-elevated)', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: 'var(--shadow-md)' }}
               />
-              <Bar dataKey="appointments" fill="var(--warning-color)" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="appointments" fill="var(--text-primary)" radius={[4, 4, 0, 0]} opacity={0.6} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      <div className="card">
-        <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: 'var(--spacing-lg)' }}>Followups by Status</h3>
+      <div className="card stagger-2">
+        <h3 style={{ fontSize: '1rem', fontWeight: 500, marginBottom: 'var(--spacing-xl)', color: 'var(--text-secondary)' }}>Followups by Status</h3>
         <div className="chart-container" style={{ display: 'flex', justifyContent: 'center' }}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -134,17 +134,19 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ data }) => {
                 cy="50%"
                 innerRadius={60}
                 outerRadius={80}
-                paddingAngle={5}
+                paddingAngle={2}
                 dataKey="value"
+                stroke="var(--bg-surface)"
+                strokeWidth={2}
                 label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
                 labelLine={false}
               >
                 {followupsData.map((_, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} opacity={0.8} />
                 ))}
               </Pie>
               <Tooltip 
-                contentStyle={{ backgroundColor: 'var(--bg-surface-elevated)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
+                contentStyle={{ backgroundColor: 'var(--bg-surface-elevated)', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: 'var(--shadow-md)' }}
               />
             </PieChart>
           </ResponsiveContainer>
