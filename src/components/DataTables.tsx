@@ -1,6 +1,6 @@
 import React from 'react';
 import { format } from 'date-fns';
-import { CallLog, Lead, Appointment } from '../types';
+import type { CallLog, Lead, Appointment } from '../types';
 
 interface DataTablesProps {
   data: {
@@ -15,7 +15,6 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
 
   const recentCalls = callLogs.slice(0, 5);
   const recentLeads = leads.slice(0, 5);
-  const upcomingAppointments = appointments.filter(a => a.status === 'upcoming').slice(0, 5);
 
   return (
     <div className="grid grid-cols-2" style={{ marginBottom: 'var(--spacing-xl)' }}>

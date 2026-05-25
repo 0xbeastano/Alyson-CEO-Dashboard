@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend, Cell, PieChart, Pie } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell, PieChart, Pie } from 'recharts';
 import { format, subDays } from 'date-fns';
-import { CallLog, Lead } from '../types';
+import type { CallLog, Lead } from '../types';
 
 interface DashboardChartsProps {
   data: {
@@ -88,7 +88,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ data }) => {
                 paddingAngle={5}
                 dataKey="value"
               >
-                {outcomesData.map((entry, index) => (
+                {outcomesData.map((_, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>

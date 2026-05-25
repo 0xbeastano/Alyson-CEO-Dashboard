@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { mockData } from '../lib/mockData';
-import { CallLog, Lead, Appointment, Followup } from '../types';
+import type { CallLog, Lead, Appointment, Followup } from '../types';
 
 // Helper to determine if Supabase is actually configured
 const isSupabaseConfigured = () => {

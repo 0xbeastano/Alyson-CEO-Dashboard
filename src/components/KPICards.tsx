@@ -1,6 +1,6 @@
 import React from 'react';
 import { PhoneCall, Users, Calendar, TrendingUp, PhoneOff, Clock } from 'lucide-react';
-import { CallLog, Lead, Appointment } from '../types';
+import type { CallLog, Lead, Appointment } from '../types';
 
 interface KPICardsProps {
   data: {
