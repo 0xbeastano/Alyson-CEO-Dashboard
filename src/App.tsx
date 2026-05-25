@@ -4,8 +4,12 @@ import { KPICards } from './components/KPICards';
 import { DashboardCharts } from './components/DashboardCharts';
 import { DataTables } from './components/DataTables';
 import { Filters } from './components/Filters';
+import { useDashboardData } from './hooks/useDashboardData';
+import { Loader2 } from 'lucide-react';
 
 function App() {
+  const { data, isLoading, isError, error } = useDashboardData();
+
   return (
     <Layout>
       <div className="header">
@@ -24,9 +28,28 @@ function App() {
       </div>
       
       <Filters />
-      <KPICards />
-      <DashboardCharts />
-      <DataTables />
+      
+      {isLoading && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 'var(--spacing-xl)', minHeight: '400px' }}>
+          <Loader2 size={40} color="var(--primary-color)" style={{ animation: 'spin 1s linear infinite' }} />
+          <p style={{ marginTop: 'var(--spacing-md)', color: 'var(--text-secondary)' }}>Loading dashboard data...</p>
+        </div>
+      )}
+
+      {isError && (
+        <div className="card" style={{ border: '1px solid var(--danger-color)', backgroundColor: 'rgba(239, 68, 68, 0.05)' }}>
+          <h3 style={{ color: 'var(--danger-color)', marginBottom: '0.5rem' }}>Error loading data</h3>
+          <p style={{ color: 'var(--text-secondary)' }}>{(error as Error)?.message || 'Failed to connect to Supabase.'}</p>
+        </div>
+      )}
+
+      {!isLoading && !isError && data && (
+        <>
+          <KPICards data={data} />
+          <DashboardCharts data={data} />
+          <DataTables data={data} />
+        </>
+      )}
       
     </Layout>
   );

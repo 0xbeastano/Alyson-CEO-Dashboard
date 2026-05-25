@@ -1,10 +1,17 @@
 import React, { useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend, Cell, PieChart, Pie } from 'recharts';
-import { mockData } from '../lib/mockData';
 import { format, subDays } from 'date-fns';
+import { CallLog, Lead } from '../types';
 
-export const DashboardCharts: React.FC = () => {
-  const { callLogs, leads } = mockData;
+interface DashboardChartsProps {
+  data: {
+    callLogs: CallLog[];
+    leads: Lead[];
+  }
+}
+
+export const DashboardCharts: React.FC<DashboardChartsProps> = ({ data }) => {
+  const { callLogs, leads } = data;
 
   // Process data for Calls Over Time
   const callsByDay = useMemo(() => {

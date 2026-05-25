@@ -1,9 +1,17 @@
 import React from 'react';
-import { mockData, CallLog, Lead, Appointment } from '../lib/mockData';
 import { format } from 'date-fns';
+import { CallLog, Lead, Appointment } from '../types';
 
-export const DataTables: React.FC = () => {
-  const { callLogs, leads, appointments } = mockData;
+interface DataTablesProps {
+  data: {
+    callLogs: CallLog[];
+    leads: Lead[];
+    appointments: Appointment[];
+  }
+}
+
+export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
+  const { callLogs, leads, appointments } = data;
 
   const recentCalls = callLogs.slice(0, 5);
   const recentLeads = leads.slice(0, 5);
@@ -66,7 +74,7 @@ export const DataTables: React.FC = () => {
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <div style={{ width: '100%', height: '4px', background: 'var(--bg-base)', borderRadius: '2px', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: \`\${lead.score}%\`, background: lead.score > 70 ? 'var(--success-color)' : lead.score > 40 ? 'var(--warning-color)' : 'var(--danger-color)' }} />
+                        <div style={{ height: '100%', width: `${lead.score}%`, background: lead.score > 70 ? 'var(--success-color)' : lead.score > 40 ? 'var(--warning-color)' : 'var(--danger-color)' }} />
                       </div>
                       <span style={{ fontSize: '0.75rem' }}>{lead.score}</span>
                     </div>
@@ -83,7 +91,7 @@ export const DataTables: React.FC = () => {
   );
 };
 
-const OutcomeBadge = ({ outcome }: { outcome: CallLog['outcome'] }) => {
+const OutcomeBadge = ({ outcome }: { outcome: string }) => {
   switch (outcome) {
     case 'completed': return <span className="badge badge-success">Completed</span>;
     case 'voicemail': return <span className="badge badge-warning">Voicemail</span>;
@@ -93,7 +101,7 @@ const OutcomeBadge = ({ outcome }: { outcome: CallLog['outcome'] }) => {
   }
 };
 
-const StatusBadge = ({ status }: { status: Lead['status'] }) => {
+const StatusBadge = ({ status }: { status: string }) => {
   switch (status) {
     case 'qualified': return <span className="badge badge-success">Qualified</span>;
     case 'contacted': return <span className="badge badge-primary">Contacted</span>;

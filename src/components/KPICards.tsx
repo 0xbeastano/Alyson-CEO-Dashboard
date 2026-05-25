@@ -1,9 +1,17 @@
 import React from 'react';
 import { PhoneCall, Users, Calendar, TrendingUp, PhoneOff, Clock } from 'lucide-react';
-import { mockData } from '../lib/mockData';
+import { CallLog, Lead, Appointment } from '../types';
 
-export const KPICards: React.FC = () => {
-  const { callLogs, leads, appointments } = mockData;
+interface KPICardsProps {
+  data: {
+    callLogs: CallLog[];
+    leads: Lead[];
+    appointments: Appointment[];
+  }
+}
+
+export const KPICards: React.FC<KPICardsProps> = ({ data }) => {
+  const { callLogs, leads, appointments } = data;
 
   const totalCalls = callLogs.length;
   const qualifiedLeads = leads.filter(l => l.status === 'qualified').length;
