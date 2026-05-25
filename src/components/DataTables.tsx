@@ -11,7 +11,7 @@ interface DataTablesProps {
 }
 
 export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
-  const { callLogs, leads, appointments } = data;
+  const { callLogs, leads } = data;
 
   const recentCalls = callLogs.slice(0, 5);
   const recentLeads = leads.slice(0, 5);
