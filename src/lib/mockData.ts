@@ -1,92 +1,43 @@
 import { subDays } from 'date-fns';
+import type { CallLog, Lead, Appointment, Followup } from '../types';
 
-export interface CallLog {
-  id: string;
-  created_at: string;
-  duration: number; // in seconds
-  outcome: 'completed' | 'voicemail' | 'failed' | 'not_interested';
-  phone_number: string;
-}
+const now = new Date();
 
-export interface Lead {
-  id: string;
-  created_at: string;
-  name: string;
-  score: number;
-  status: 'new' | 'contacted' | 'qualified' | 'disqualified';
-}
-
-export interface Appointment {
-  id: string;
-  created_at: string;
-  scheduled_for: string;
-  attendee_name: string;
-  status: 'upcoming' | 'completed' | 'cancelled';
-}
-
-export interface Followup {
-  id: string;
-  created_at: string;
-  type: 'callback_request' | 'email_sent';
-  status: 'pending' | 'resolved';
-}
-
-const generateMockData = () => {
-  const now = new Date();
-  
-  const callLogs: CallLog[] = Array.from({ length: 150 }).map((_, i) => {
-    const daysAgo = Math.floor(Math.random() * 30);
-    const date = subDays(now, daysAgo);
-    const outcomes = ['completed', 'completed', 'completed', 'voicemail', 'failed', 'not_interested'];
+export const mockData = {
+  callLogs: Array.from({ length: 45 }).map((_, i) => {
+    const outcome = ['completed', 'voicemail', 'failed', 'not_interested'][Math.floor(Math.random() * 4)];
     return {
       id: `call-${i}`,
-      created_at: date.toISOString(),
-      duration: Math.floor(Math.random() * 300) + 30, // 30s to 5.5m
-      outcome: outcomes[Math.floor(Math.random() * outcomes.length)] as CallLog['outcome'],
-      phone_number: `+1 (555) ${Math.floor(100 + Math.random() * 900)}-${Math.floor(1000 + Math.random() * 9000)}`
-    };
-  });
-
-  const leads: Lead[] = Array.from({ length: 45 }).map((_, i) => {
-    const daysAgo = Math.floor(Math.random() * 30);
-    const date = subDays(now, daysAgo);
-    const statuses = ['new', 'contacted', 'qualified', 'disqualified'];
+      call_id: `sys-call-${i}`,
+      customer_name: `Customer ${i}`,
+      customer_phone: `+1555000${i.toString().padStart(4, '0')}`,
+      call_duration: Math.floor(Math.random() * 300) + 30, // 30s to 330s
+      call_outcome: outcome,
+      created_at: subDays(now, Math.floor(Math.random() * 7)).toISOString(),
+    } as CallLog;
+  }),
+  leads: Array.from({ length: 15 }).map((_, i) => {
+    const qualified = Math.random() > 0.4;
     return {
       id: `lead-${i}`,
-      created_at: date.toISOString(),
-      name: `Lead ${i + 1}`,
-      score: Math.floor(Math.random() * 100),
-      status: statuses[Math.floor(Math.random() * statuses.length)] as Lead['status'],
-    };
-  });
-
-  const appointments: Appointment[] = Array.from({ length: 20 }).map((_, i) => {
-    const daysAgo = Math.floor(Math.random() * 30) - 15; // Some in future, some in past
-    const date = subDays(now, daysAgo);
-    const statuses = ['upcoming', 'completed', 'cancelled'];
-    return {
-      id: `apt-${i}`,
-      created_at: subDays(date, 2).toISOString(),
-      scheduled_for: date.toISOString(),
-      attendee_name: `Client ${i + 1}`,
-      status: daysAgo < 0 ? 'upcoming' : statuses[Math.floor(Math.random() * statuses.length)] as Appointment['status'],
-    };
-  });
-
-  const followups: Followup[] = Array.from({ length: 30 }).map((_, i) => {
-    const daysAgo = Math.floor(Math.random() * 10);
-    const date = subDays(now, daysAgo);
-    const statuses = ['pending', 'pending', 'resolved'];
-    const types = ['callback_request', 'email_sent'];
-    return {
-      id: `fup-${i}`,
-      created_at: date.toISOString(),
-      type: types[Math.floor(Math.random() * types.length)] as Followup['type'],
-      status: statuses[Math.floor(Math.random() * statuses.length)] as Followup['status'],
-    };
-  });
-
-  return { callLogs, leads, appointments, followups };
+      customer_name: `Lead Prospect ${i}`,
+      qualified: qualified,
+      status: qualified ? 'qualified' : 'new',
+      created_at: subDays(now, Math.floor(Math.random() * 7)).toISOString(),
+    } as Lead;
+  }),
+  appointments: Array.from({ length: 8 }).map((_, i) => ({
+    id: `apt-${i}`,
+    customer_name: `Appt Client ${i}`,
+    appointment_datetime: subDays(now, Math.floor(Math.random() * -7)).toISOString(), // future dates
+    status: 'upcoming',
+    created_at: subDays(now, Math.floor(Math.random() * 7)).toISOString(),
+  }) as Appointment),
+  followups: Array.from({ length: 12 }).map((_, i) => ({
+    id: `follow-${i}`,
+    customer_name: `Followup Client ${i}`,
+    followup_type: Math.random() > 0.5 ? 'callback_request' : 'email_sent',
+    status: Math.random() > 0.3 ? 'pending' : 'resolved',
+    created_at: subDays(now, Math.floor(Math.random() * 7)).toISOString(),
+  }) as Followup),
 };
-
-export const mockData = generateMockData();

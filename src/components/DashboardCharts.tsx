@@ -1,20 +1,23 @@
 import React, { useMemo } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell, PieChart, Pie } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend, Cell, PieChart, Pie } from 'recharts';
 import { format, subDays } from 'date-fns';
-import type { CallLog, Lead } from '../types';
+import type { CallLog, Lead, Appointment, Followup } from '../types';
 
 interface DashboardChartsProps {
   data: {
     callLogs: CallLog[];
     leads: Lead[];
+    appointments: Appointment[];
+    followups: Followup[];
   }
 }
 
-export const DashboardCharts: React.FC<DashboardChartsProps> = ({ data }) => {
-  const { callLogs, leads } = data;
+const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
-  // Process data for Calls Over Time
-  const callsByDay = useMemo(() => {
+export const DashboardCharts: React.FC<DashboardChartsProps> = ({ data }) => {
+  const { callLogs, leads, appointments, followups } = data;
+
+  const volumeData = useMemo(() => {
     const days = Array.from({ length: 7 }).map((_, i) => {
       const d = subDays(new Date(), 6 - i);
       return { date: format(d, 'MMM dd'), fullDate: format(d, 'yyyy-MM-dd') };
@@ -24,83 +27,130 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ data }) => {
       name: day.date,
       calls: (callLogs || []).filter(c => c?.created_at && typeof c.created_at === 'string' && c.created_at.startsWith(day.fullDate)).length,
       leads: (leads || []).filter(l => l?.created_at && typeof l.created_at === 'string' && l.created_at.startsWith(day.fullDate)).length,
+      appointments: (appointments || []).filter(a => a?.created_at && typeof a.created_at === 'string' && a.created_at.startsWith(day.fullDate)).length,
     }));
-  }, [callLogs, leads]);
+  }, [callLogs, leads, appointments]);
 
-  // Process data for Call Outcomes
   const outcomesData = useMemo(() => {
     const outcomesCount = (callLogs || []).reduce((acc, call) => {
-      const outcome = call?.outcome || 'unknown';
+      const outcome = call?.call_outcome || 'unknown';
       acc[outcome] = (acc[outcome] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
     
-    return Object.entries(outcomesCount).map(([name, value]) => ({
-      name: name.replace('_', ' ').toUpperCase(),
-      value
-    }));
+    return Object.entries(outcomesCount).map(([name, value]) => ({ name, value }));
   }, [callLogs]);
 
-  const COLORS = ['#10b981', '#f59e0b', '#ef4444', '#6366f1'];
+  const followupsData = useMemo(() => {
+    const statusCount = (followups || []).reduce((acc, followup) => {
+      const status = followup?.status || 'unknown';
+      acc[status] = (acc[status] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    return Object.entries(statusCount).map(([name, value]) => ({ name, value }));
+  }, [followups]);
 
   return (
     <div className="grid grid-cols-2" style={{ marginBottom: 'var(--spacing-xl)' }}>
       <div className="card">
-        <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: 'var(--spacing-md)' }}>Traffic Over Time</h3>
+        <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: 'var(--spacing-lg)' }}>Volume Trends (7 Days)</h3>
         <div className="chart-container">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={callsByDay} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <AreaChart data={volumeData}>
               <defs>
                 <linearGradient id="colorCalls" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--primary-color)" stopOpacity={0.8}/>
+                  <stop offset="5%" stopColor="var(--primary-color)" stopOpacity={0.3}/>
                   <stop offset="95%" stopColor="var(--primary-color)" stopOpacity={0}/>
                 </linearGradient>
                 <linearGradient id="colorLeads" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--success-color)" stopOpacity={0.8}/>
+                  <stop offset="5%" stopColor="var(--success-color)" stopOpacity={0.3}/>
                   <stop offset="95%" stopColor="var(--success-color)" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
               <XAxis dataKey="name" stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
               <YAxis stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
               <Tooltip 
-                contentStyle={{ backgroundColor: 'var(--bg-surface-elevated)', borderColor: 'var(--border-color)', borderRadius: '8px' }} 
+                contentStyle={{ backgroundColor: 'var(--bg-surface-elevated)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
                 itemStyle={{ color: 'var(--text-primary)' }}
               />
-              <Legend verticalAlign="top" height={36}/>
-              <Area type="monotone" dataKey="calls" name="Total Calls" stroke="var(--primary-color)" fillOpacity={1} fill="url(#colorCalls)" />
-              <Area type="monotone" dataKey="leads" name="New Leads" stroke="var(--success-color)" fillOpacity={1} fill="url(#colorLeads)" />
+              <Legend />
+              <Area type="monotone" dataKey="calls" stroke="var(--primary-color)" fillOpacity={1} fill="url(#colorCalls)" />
+              <Area type="monotone" dataKey="leads" stroke="var(--success-color)" fillOpacity={1} fill="url(#colorLeads)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
       </div>
-      
+
       <div className="card">
-        <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: 'var(--spacing-md)' }}>Call Outcomes Breakdown</h3>
+        <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: 'var(--spacing-lg)' }}>Call Outcomes</h3>
         <div className="chart-container">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={outcomesData} layout="vertical" margin={{ top: 0, right: 0, left: 30, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" horizontal={false} />
+              <XAxis type="number" stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
+              <YAxis dataKey="name" type="category" stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
+              <Tooltip 
+                cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                contentStyle={{ backgroundColor: 'var(--bg-surface-elevated)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
+              />
+              <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+                {outcomesData.map((_, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      <div className="card">
+        <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: 'var(--spacing-lg)' }}>Appointments (7 Days)</h3>
+        <div className="chart-container">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={volumeData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
+              <XAxis dataKey="name" stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
+              <YAxis stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
+              <Tooltip 
+                cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                contentStyle={{ backgroundColor: 'var(--bg-surface-elevated)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
+              />
+              <Bar dataKey="appointments" fill="var(--warning-color)" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      <div className="card">
+        <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: 'var(--spacing-lg)' }}>Followups by Status</h3>
+        <div className="chart-container" style={{ display: 'flex', justifyContent: 'center' }}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={outcomesData}
+                data={followupsData}
                 cx="50%"
                 cy="50%"
                 innerRadius={60}
-                outerRadius={100}
+                outerRadius={80}
                 paddingAngle={5}
                 dataKey="value"
+                label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
+                labelLine={false}
               >
-                {outcomesData.map((_, index) => (
+                {followupsData.map((_, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip 
-                contentStyle={{ backgroundColor: 'var(--bg-surface-elevated)', borderColor: 'var(--border-color)', borderRadius: '8px' }} 
+                contentStyle={{ backgroundColor: 'var(--bg-surface-elevated)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
               />
-              <Legend verticalAlign="middle" align="right" layout="vertical" />
             </PieChart>
           </ResponsiveContainer>
         </div>
       </div>
+
     </div>
   );
 };

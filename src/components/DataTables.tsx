@@ -1,20 +1,23 @@
 import React from 'react';
 import { format } from 'date-fns';
-import type { CallLog, Lead, Appointment } from '../types';
+import type { CallLog, Lead, Appointment, Followup } from '../types';
 
 interface DataTablesProps {
   data: {
     callLogs: CallLog[];
     leads: Lead[];
     appointments: Appointment[];
+    followups: Followup[];
   }
 }
 
 export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
-  const { callLogs, leads } = data;
+  const { callLogs, leads, appointments, followups } = data;
 
   const recentCalls = (callLogs || []).slice(0, 5);
   const recentLeads = (leads || []).slice(0, 5);
+  const upcomingAppointments = (appointments || []).slice(0, 5);
+  const openFollowups = (followups || []).filter(f => f.status === 'pending').slice(0, 5);
 
   return (
     <div className="grid grid-cols-2" style={{ marginBottom: 'var(--spacing-xl)' }}>
@@ -38,10 +41,10 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
               {recentCalls.map((call, i) => (
                 <tr key={call?.id || `call-${i}`}>
                   <td>{call?.created_at ? format(new Date(call.created_at), 'MMM dd, HH:mm') : 'N/A'}</td>
-                  <td style={{ color: 'var(--text-primary)' }}>{call?.phone_number || 'N/A'}</td>
-                  <td>{Math.floor((call?.duration || 0) / 60)}m {(call?.duration || 0) % 60}s</td>
+                  <td style={{ color: 'var(--text-primary)' }}>{call?.customer_phone || 'N/A'}</td>
+                  <td>{Math.floor((call?.call_duration || 0) / 60)}m {(call?.call_duration || 0) % 60}s</td>
                   <td>
-                    <OutcomeBadge outcome={call?.outcome || 'unknown'} />
+                    <OutcomeBadge outcome={call?.call_outcome || 'unknown'} />
                   </td>
                 </tr>
               ))}
@@ -59,33 +62,91 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
           <table>
             <thead>
               <tr>
-                <th>Name / Lead</th>
+                <th>Name</th>
                 <th>Date</th>
-                <th>Score</th>
+                <th>Qualified</th>
                 <th>Status</th>
               </tr>
             </thead>
             <tbody>
-              {recentLeads.map((lead, i) => {
-                const score = lead?.score || 0;
-                const bgColor = score > 70 ? 'var(--success-color)' : score > 40 ? 'var(--warning-color)' : 'var(--danger-color)';
-                
-                return (
-                  <tr key={lead?.id || `lead-${i}`}>
-                    <td style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{lead?.name || 'Unknown'}</td>
-                    <td>{lead?.created_at ? format(new Date(lead.created_at), 'MMM dd') : 'N/A'}</td>
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <div style={{ width: '100%', height: '4px', background: 'var(--bg-base)', borderRadius: '2px', overflow: 'hidden' }}>
-                          <div style={{ height: '100%', width: `${score}%`, background: bgColor }} />
-                        </div>
-                        <span style={{ fontSize: '0.75rem' }}>{score}</span>
-                      </div>
-                    </td>
-                    <td><StatusBadge status={lead?.status || 'new'} /></td>
-                  </tr>
-                );
-              })}
+              {recentLeads.map((lead, i) => (
+                <tr key={lead?.id || `lead-${i}`}>
+                  <td style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{lead?.customer_name || 'Unknown'}</td>
+                  <td>{lead?.created_at ? format(new Date(lead.created_at), 'MMM dd') : 'N/A'}</td>
+                  <td>
+                    {lead?.qualified ? (
+                      <span className="badge badge-success">Yes</span>
+                    ) : (
+                      <span className="badge badge-neutral">No</span>
+                    )}
+                  </td>
+                  <td><StatusBadge status={lead?.status || 'new'} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
+          <h3 style={{ fontSize: '1.125rem', fontWeight: 600 }}>Upcoming Appointments</h3>
+          <button style={{ background: 'transparent', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', fontSize: '0.875rem' }}>View All</button>
+        </div>
+        <div className="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Client Name</th>
+                <th>Date & Time</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {upcomingAppointments.map((apt, i) => (
+                <tr key={apt?.id || `apt-${i}`}>
+                  <td style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{apt?.customer_name || 'Unknown'}</td>
+                  <td>{apt?.appointment_datetime ? format(new Date(apt.appointment_datetime), 'MMM dd, HH:mm') : 'N/A'}</td>
+                  <td><span className="badge badge-primary">{apt?.status || 'upcoming'}</span></td>
+                </tr>
+              ))}
+              {upcomingAppointments.length === 0 && (
+                <tr>
+                  <td colSpan={3} style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem' }}>No upcoming appointments</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
+          <h3 style={{ fontSize: '1.125rem', fontWeight: 600 }}>Open Follow-ups</h3>
+          <button style={{ background: 'transparent', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', fontSize: '0.875rem' }}>View All</button>
+        </div>
+        <div className="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Client Name</th>
+                <th>Type</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {openFollowups.map((fup, i) => (
+                <tr key={fup?.id || `fup-${i}`}>
+                  <td style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{fup?.customer_name || 'Unknown'}</td>
+                  <td style={{ textTransform: 'capitalize' }}>{(fup?.followup_type || 'unknown').replace('_', ' ')}</td>
+                  <td><span className="badge badge-warning">{fup?.status || 'pending'}</span></td>
+                </tr>
+              ))}
+              {openFollowups.length === 0 && (
+                <tr>
+                  <td colSpan={3} style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem' }}>No pending follow-ups</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
