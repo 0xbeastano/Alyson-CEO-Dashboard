@@ -36,7 +36,7 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
             </thead>
             <tbody>
               {recentCalls.map((call, i) => (
-                <tr key={call?.id || \`call-\${i}\`}>
+                <tr key={call?.id || `call-${i}`}>
                   <td>{call?.created_at ? format(new Date(call.created_at), 'MMM dd, HH:mm') : 'N/A'}</td>
                   <td style={{ color: 'var(--text-primary)' }}>{call?.phone_number || 'N/A'}</td>
                   <td>{Math.floor((call?.duration || 0) / 60)}m {(call?.duration || 0) % 60}s</td>
@@ -52,7 +52,7 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
 
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
-          <h3 style={{ fontSize: '1.125rem', fontWeight: 600 }}>Recent Leads & Appointments</h3>
+          <h3 style={{ fontSize: '1.125rem', fontWeight: 600 }}>Recent Leads</h3>
           <button style={{ background: 'transparent', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', fontSize: '0.875rem' }}>View All</button>
         </div>
         <div className="table-container">
@@ -66,21 +66,26 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
               </tr>
             </thead>
             <tbody>
-              {recentLeads.map((lead, i) => (
-                <tr key={lead?.id || \`lead-\${i}\`}>
-                  <td style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{lead?.name || 'Unknown'}</td>
-                  <td>{lead?.created_at ? format(new Date(lead.created_at), 'MMM dd') : 'N/A'}</td>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <div style={{ width: '100%', height: '4px', background: 'var(--bg-base)', borderRadius: '2px', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: \`\${lead?.score || 0}%\`, background: (lead?.score || 0) > 70 ? 'var(--success-color)' : (lead?.score || 0) > 40 ? 'var(--warning-color)' : 'var(--danger-color)' }} />
+              {recentLeads.map((lead, i) => {
+                const score = lead?.score || 0;
+                const bgColor = score > 70 ? 'var(--success-color)' : score > 40 ? 'var(--warning-color)' : 'var(--danger-color)';
+                
+                return (
+                  <tr key={lead?.id || `lead-${i}`}>
+                    <td style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{lead?.name || 'Unknown'}</td>
+                    <td>{lead?.created_at ? format(new Date(lead.created_at), 'MMM dd') : 'N/A'}</td>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <div style={{ width: '100%', height: '4px', background: 'var(--bg-base)', borderRadius: '2px', overflow: 'hidden' }}>
+                          <div style={{ height: '100%', width: `${score}%`, background: bgColor }} />
+                        </div>
+                        <span style={{ fontSize: '0.75rem' }}>{score}</span>
                       </div>
-                      <span style={{ fontSize: '0.75rem' }}>{lead?.score || 0}</span>
-                    </div>
-                  </td>
-                  <td><StatusBadge status={lead?.status || 'new'} /></td>
-                </tr>
-              ))}
+                    </td>
+                    <td><StatusBadge status={lead?.status || 'new'} /></td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
