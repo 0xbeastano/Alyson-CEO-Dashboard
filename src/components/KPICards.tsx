@@ -1,36 +1,27 @@
 import React from 'react';
 import { PhoneCall, Users, Calendar, TrendingUp, PhoneOff, Clock, PhoneForwarded } from 'lucide-react';
-import type { CallLog, Lead, Appointment, Followup } from '../types';
+import type { DashboardKPIs } from '../types';
 
 interface KPICardsProps {
   data: {
-    callLogs: CallLog[];
-    leads: Lead[];
-    appointments: Appointment[];
-    followups: Followup[];
+    kpis: DashboardKPIs;
   }
 }
 
 export const KPICards: React.FC<KPICardsProps> = ({ data }) => {
-  const { callLogs, leads, appointments, followups } = data;
+  const { kpis } = data;
 
-  const totalCalls = callLogs?.length || 0;
-  const qualifiedLeads = (leads || []).filter(l => l?.qualified === true).length;
-  const appointmentsScheduled = appointments?.length || 0;
-  const averageDuration = Math.round((callLogs || []).reduce((acc, curr) => acc + (curr?.call_duration || 0), 0) / (totalCalls || 1));
-  const conversionRate = Math.round((qualifiedLeads / (totalCalls || 1)) * 100);
-  const notInterested = (callLogs || []).filter(c => c?.call_outcome === 'not_interested').length;
-  const callbackRequests = (followups || []).filter(f => f?.followup_type === 'callback_request').length;
+  const averageDuration = kpis?.average_duration_seconds || 0;
 
   return (
     <div className="grid grid-cols-4" style={{ marginBottom: 'var(--spacing-xl)', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
-      <Card title="Total Calls" value={totalCalls} icon={<PhoneCall />} />
-      <Card title="Qualified Leads" value={qualifiedLeads} icon={<Users />} />
-      <Card title="Appointments" value={appointmentsScheduled} icon={<Calendar />} />
-      <Card title="Callback Requests" value={callbackRequests} icon={<PhoneForwarded />} trend="Needs action" positive={false} />
-      <Card title="Not Interested" value={notInterested} icon={<PhoneOff />} trend="Missed" positive={false} />
-      <Card title="Conversion Rate" value={`${conversionRate}%`} icon={<TrendingUp />} trend="Lead to Call" positive={true} />
-      <Card title="Avg Duration" value={`${Math.floor(averageDuration / 60)}m ${averageDuration % 60}s`} icon={<Clock />} />
+      <Card title="Total Calls" value={kpis?.total_calls || 0} icon={<PhoneCall />} />
+      <Card title="Qualified Leads" value={kpis?.qualified_leads || 0} icon={<Users />} />
+      <Card title="Appointments" value={kpis?.appointments_scheduled || 0} icon={<Calendar />} />
+      <Card title="Callback Requests" value={kpis?.callback_requests || 0} icon={<PhoneForwarded />} trend="Needs action" positive={false} />
+      <Card title="Not Interested" value={kpis?.not_interested || 0} icon={<PhoneOff />} trend="Missed" positive={false} />
+      <Card title="Conversion Rate" value={`${kpis?.lead_conversion_rate || 0}%`} icon={<TrendingUp />} trend="Lead to Call" positive={true} />
+      <Card title="Avg Duration" value={`${Math.floor(averageDuration / 60)}m ${Math.floor(averageDuration % 60)}s`} icon={<Clock />} />
     </div>
   );
 };

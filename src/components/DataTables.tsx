@@ -1,23 +1,21 @@
 import React from 'react';
 import { format } from 'date-fns';
-import type { CallLog, Lead, Appointment, Followup } from '../types';
+import type { DashboardRecentCall, Lead, Appointment, DashboardOpenFollowup } from '../types';
 
 interface DataTablesProps {
   data: {
-    callLogs: CallLog[];
+    recentCalls: DashboardRecentCall[];
     leads: Lead[];
     appointments: Appointment[];
-    followups: Followup[];
+    openFollowups: DashboardOpenFollowup[];
   }
 }
 
 export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
-  const { callLogs, leads, appointments, followups } = data;
+  const { recentCalls, leads, appointments, openFollowups } = data;
 
-  const recentCalls = (callLogs || []).slice(0, 5);
   const recentLeads = (leads || []).slice(0, 5);
   const upcomingAppointments = (appointments || []).slice(0, 5);
-  const openFollowups = (followups || []).filter(f => f.status === 'pending').slice(0, 5);
 
   return (
     <div className="grid grid-cols-2" style={{ marginBottom: 'var(--spacing-xl)' }}>
@@ -33,7 +31,6 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
               <tr>
                 <th>Date</th>
                 <th>Phone Number</th>
-                <th>Duration</th>
                 <th>Outcome</th>
               </tr>
             </thead>
@@ -42,12 +39,16 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
                 <tr key={call?.id || `call-${i}`}>
                   <td>{call?.created_at ? format(new Date(call.created_at), 'MMM dd, HH:mm') : 'N/A'}</td>
                   <td style={{ color: 'var(--text-primary)' }}>{call?.customer_phone || 'N/A'}</td>
-                  <td>{Math.floor((call?.call_duration || 0) / 60)}m {(call?.call_duration || 0) % 60}s</td>
                   <td>
                     <OutcomeBadge outcome={call?.call_outcome || 'unknown'} />
                   </td>
                 </tr>
               ))}
+              {recentCalls.length === 0 && (
+                <tr>
+                  <td colSpan={3} style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem' }}>No recent calls</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -74,7 +75,7 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
                   <td style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{lead?.customer_name || 'Unknown'}</td>
                   <td>{lead?.created_at ? format(new Date(lead.created_at), 'MMM dd') : 'N/A'}</td>
                   <td>
-                    {lead?.qualified ? (
+                    {lead?.qualified === true ? (
                       <span className="badge badge-success">Yes</span>
                     ) : (
                       <span className="badge badge-neutral">No</span>
@@ -83,6 +84,11 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
                   <td><StatusBadge status={lead?.status || 'new'} /></td>
                 </tr>
               ))}
+              {recentLeads.length === 0 && (
+                <tr>
+                  <td colSpan={4} style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem' }}>No recent leads</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
