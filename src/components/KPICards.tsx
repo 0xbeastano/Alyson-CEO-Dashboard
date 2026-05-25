@@ -13,12 +13,12 @@ interface KPICardsProps {
 export const KPICards: React.FC<KPICardsProps> = ({ data }) => {
   const { callLogs, leads, appointments } = data;
 
-  const totalCalls = callLogs.length;
-  const qualifiedLeads = leads.filter(l => l.status === 'qualified').length;
-  const appointmentsScheduled = appointments.length;
-  const averageDuration = Math.round(callLogs.reduce((acc, curr) => acc + curr.duration, 0) / (totalCalls || 1));
+  const totalCalls = callLogs?.length || 0;
+  const qualifiedLeads = (leads || []).filter(l => l?.status === 'qualified').length;
+  const appointmentsScheduled = appointments?.length || 0;
+  const averageDuration = Math.round((callLogs || []).reduce((acc, curr) => acc + (curr?.duration || 0), 0) / (totalCalls || 1));
   const conversionRate = Math.round((qualifiedLeads / (totalCalls || 1)) * 100);
-  const notInterested = callLogs.filter(c => c.outcome === 'not_interested').length;
+  const notInterested = (callLogs || []).filter(c => c?.outcome === 'not_interested').length;
 
   return (
     <div className="grid grid-cols-3" style={{ marginBottom: 'var(--spacing-xl)' }}>

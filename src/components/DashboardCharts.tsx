@@ -22,15 +22,16 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({ data }) => {
     
     return days.map(day => ({
       name: day.date,
-      calls: callLogs.filter(c => c.created_at.startsWith(day.fullDate)).length,
-      leads: leads.filter(l => l.created_at.startsWith(day.fullDate)).length,
+      calls: (callLogs || []).filter(c => c?.created_at && typeof c.created_at === 'string' && c.created_at.startsWith(day.fullDate)).length,
+      leads: (leads || []).filter(l => l?.created_at && typeof l.created_at === 'string' && l.created_at.startsWith(day.fullDate)).length,
     }));
   }, [callLogs, leads]);
 
   // Process data for Call Outcomes
   const outcomesData = useMemo(() => {
-    const outcomesCount = callLogs.reduce((acc, call) => {
-      acc[call.outcome] = (acc[call.outcome] || 0) + 1;
+    const outcomesCount = (callLogs || []).reduce((acc, call) => {
+      const outcome = call?.outcome || 'unknown';
+      acc[outcome] = (acc[outcome] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
     

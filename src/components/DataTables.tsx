@@ -13,8 +13,8 @@ interface DataTablesProps {
 export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
   const { callLogs, leads } = data;
 
-  const recentCalls = callLogs.slice(0, 5);
-  const recentLeads = leads.slice(0, 5);
+  const recentCalls = (callLogs || []).slice(0, 5);
+  const recentLeads = (leads || []).slice(0, 5);
 
   return (
     <div className="grid grid-cols-2" style={{ marginBottom: 'var(--spacing-xl)' }}>
@@ -35,13 +35,13 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
               </tr>
             </thead>
             <tbody>
-              {recentCalls.map(call => (
-                <tr key={call.id}>
-                  <td>{format(new Date(call.created_at), 'MMM dd, HH:mm')}</td>
-                  <td style={{ color: 'var(--text-primary)' }}>{call.phone_number}</td>
-                  <td>{Math.floor(call.duration / 60)}m {call.duration % 60}s</td>
+              {recentCalls.map((call, i) => (
+                <tr key={call?.id || \`call-\${i}\`}>
+                  <td>{call?.created_at ? format(new Date(call.created_at), 'MMM dd, HH:mm') : 'N/A'}</td>
+                  <td style={{ color: 'var(--text-primary)' }}>{call?.phone_number || 'N/A'}</td>
+                  <td>{Math.floor((call?.duration || 0) / 60)}m {(call?.duration || 0) % 60}s</td>
                   <td>
-                    <OutcomeBadge outcome={call.outcome} />
+                    <OutcomeBadge outcome={call?.outcome || 'unknown'} />
                   </td>
                 </tr>
               ))}
@@ -66,19 +66,19 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
               </tr>
             </thead>
             <tbody>
-              {recentLeads.map(lead => (
-                <tr key={lead.id}>
-                  <td style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{lead.name}</td>
-                  <td>{format(new Date(lead.created_at), 'MMM dd')}</td>
+              {recentLeads.map((lead, i) => (
+                <tr key={lead?.id || \`lead-\${i}\`}>
+                  <td style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{lead?.name || 'Unknown'}</td>
+                  <td>{lead?.created_at ? format(new Date(lead.created_at), 'MMM dd') : 'N/A'}</td>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <div style={{ width: '100%', height: '4px', background: 'var(--bg-base)', borderRadius: '2px', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${lead.score}%`, background: lead.score > 70 ? 'var(--success-color)' : lead.score > 40 ? 'var(--warning-color)' : 'var(--danger-color)' }} />
+                        <div style={{ height: '100%', width: \`\${lead?.score || 0}%\`, background: (lead?.score || 0) > 70 ? 'var(--success-color)' : (lead?.score || 0) > 40 ? 'var(--warning-color)' : 'var(--danger-color)' }} />
                       </div>
-                      <span style={{ fontSize: '0.75rem' }}>{lead.score}</span>
+                      <span style={{ fontSize: '0.75rem' }}>{lead?.score || 0}</span>
                     </div>
                   </td>
-                  <td><StatusBadge status={lead.status} /></td>
+                  <td><StatusBadge status={lead?.status || 'new'} /></td>
                 </tr>
               ))}
             </tbody>
