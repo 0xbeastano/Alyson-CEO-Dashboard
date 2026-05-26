@@ -1,5 +1,6 @@
 import React from 'react';
 import { Settings, LogOut } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -27,10 +28,10 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
           
           <nav style={{ display: 'flex', gap: 'var(--spacing-md)' }}>
-            <NavItem label="Overview" active />
-            <NavItem label="Call Logs" />
-            <NavItem label="Leads" />
-            <NavItem label="Appointments" />
+            <NavItem label="Overview" to="/" />
+            <NavItem label="Call Logs" to="/calls" />
+            <NavItem label="Leads" to="/leads" />
+            <NavItem label="Appointments" to="/appointments" />
           </nav>
         </div>
 
@@ -54,24 +55,22 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   );
 };
 
-const NavItem = ({ label, active = false }: { label: string, active?: boolean }) => (
-  <button style={{
-    background: 'transparent',
-    color: active ? 'var(--text-primary)' : 'var(--text-secondary)',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '0.875rem',
-    fontWeight: 500,
-    transition: 'color var(--transition-fast)',
-    padding: 'var(--spacing-xs) 0',
-  }}
-  onMouseEnter={(e) => {
-    if (!active) e.currentTarget.style.color = 'var(--text-primary)';
-  }}
-  onMouseLeave={(e) => {
-    if (!active) e.currentTarget.style.color = 'var(--text-secondary)';
-  }}
+const NavItem = ({ label, to }: { label: string, to: string }) => (
+  <NavLink
+    to={to}
+    style={({ isActive }) => ({
+      textDecoration: 'none',
+      background: 'transparent',
+      color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+      border: 'none',
+      cursor: 'pointer',
+      fontSize: '0.875rem',
+      fontWeight: 500,
+      transition: 'color var(--transition-fast)',
+      padding: 'var(--spacing-xs) 0',
+    })}
+    className={({ isActive }) => (isActive ? 'nav-link-active' : '')}
   >
     {label}
-  </button>
+  </NavLink>
 );

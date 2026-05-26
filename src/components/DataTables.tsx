@@ -1,5 +1,6 @@
 import React from 'react';
 import { format } from 'date-fns';
+import { Link } from 'react-router-dom';
 import type { DashboardRecentCall, Lead, Appointment, DashboardOpenFollowup } from '../types';
 
 interface DataTablesProps {
@@ -14,8 +15,11 @@ interface DataTablesProps {
 export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
   const { recentCalls, leads, appointments, openFollowups } = data;
 
-  const recentLeads = (leads || []).slice(0, 5);
-  const upcomingAppointments = (appointments || []).slice(0, 5);
+  const recentLeads = [...(leads || [])].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 5);
+  const upcomingAppointments = [...(appointments || [])]
+    .filter(a => new Date(a.appointment_datetime) > new Date())
+    .sort((a, b) => new Date(a.appointment_datetime).getTime() - new Date(b.appointment_datetime).getTime())
+    .slice(0, 5);
 
   return (
     <div className="grid grid-cols-2" style={{ marginBottom: 'var(--spacing-xl)' }}>
@@ -23,7 +27,7 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
       <div className="card stagger-6">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-lg)' }}>
           <h3 style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Recent Calls</h3>
-          <button style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.8125rem', transition: 'color var(--transition-fast)' }} onMouseOver={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseOut={e => e.currentTarget.style.color = 'var(--text-muted)'}>View All</button>
+          <Link to="/calls" style={{ textDecoration: 'none', background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.8125rem', transition: 'color var(--transition-fast)' }} onMouseOver={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseOut={e => e.currentTarget.style.color = 'var(--text-muted)'}>View All</Link>
         </div>
         <div className="table-container">
           <table>
@@ -57,7 +61,7 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
       <div className="card stagger-7">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-lg)' }}>
           <h3 style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Recent Leads</h3>
-          <button style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.8125rem', transition: 'color var(--transition-fast)' }} onMouseOver={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseOut={e => e.currentTarget.style.color = 'var(--text-muted)'}>View All</button>
+          <Link to="/leads" style={{ textDecoration: 'none', background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.8125rem', transition: 'color var(--transition-fast)' }} onMouseOver={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseOut={e => e.currentTarget.style.color = 'var(--text-muted)'}>View All</Link>
         </div>
         <div className="table-container">
           <table>
@@ -97,7 +101,7 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
       <div className="card stagger-1">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-lg)' }}>
           <h3 style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Upcoming Appointments</h3>
-          <button style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.8125rem', transition: 'color var(--transition-fast)' }} onMouseOver={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseOut={e => e.currentTarget.style.color = 'var(--text-muted)'}>View All</button>
+          <Link to="/appointments" style={{ textDecoration: 'none', background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.8125rem', transition: 'color var(--transition-fast)' }} onMouseOver={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseOut={e => e.currentTarget.style.color = 'var(--text-muted)'}>View All</Link>
         </div>
         <div className="table-container">
           <table>
@@ -129,7 +133,7 @@ export const DataTables: React.FC<DataTablesProps> = ({ data }) => {
       <div className="card stagger-2">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-lg)' }}>
           <h3 style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Open Follow-ups</h3>
-          <button style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.8125rem', transition: 'color var(--transition-fast)' }} onMouseOver={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseOut={e => e.currentTarget.style.color = 'var(--text-muted)'}>View All</button>
+          <Link to="/" style={{ textDecoration: 'none', background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.8125rem', transition: 'color var(--transition-fast)' }} onMouseOver={e => e.currentTarget.style.color = 'var(--text-primary)'} onMouseOut={e => e.currentTarget.style.color = 'var(--text-muted)'}>View All</Link>
         </div>
         <div className="table-container">
           <table>
