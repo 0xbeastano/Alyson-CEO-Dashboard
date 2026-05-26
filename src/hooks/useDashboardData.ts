@@ -89,7 +89,7 @@ export const useDashboardData = () => {
       if (followupsRes.error) throw followupsRes.error;
 
       return {
-        kpis: (kpis.data || {
+        kpis: (kpis.data?.[0] || {
           total_calls: 0, qualified_leads: 0, appointments_scheduled: 0, 
           callback_requests: 0, not_interested: 0, lead_conversion_rate: 0, average_duration_seconds: 0
         }) as DashboardKPIs,
