@@ -53,6 +53,7 @@ export const useDashboardData = () => {
       }
 
       // Apply Date Filter (basic implementation)
+      let dateIso: string | null = null;
       if (dateRange !== 'all') {
         const now = new Date();
         let dateFilter = new Date();
@@ -60,12 +61,17 @@ export const useDashboardData = () => {
         if (dateRange === '30d') dateFilter.setDate(now.getDate() - 30);
         if (dateRange === 'month') dateFilter.setDate(1);
 
-        callsQuery = callsQuery.gte('created_at', dateFilter.toISOString());
-        leadsQuery = leadsQuery.gte('created_at', dateFilter.toISOString());
+        dateIso = dateFilter.toISOString();
+        callsQuery = callsQuery.gte('created_at', dateIso);
+        leadsQuery = leadsQuery.gte('created_at', dateIso);
       }
 
       const [kpis, recentCalls, openFollowups, calls, leadsRes, appointmentsRes, followupsRes] = await Promise.all([
-        supabase.from('dashboard_kpis').select('*').single(),
+        supabase.rpc('get_dashboard_kpis', {
+          p_date_range: dateIso,
+          p_outcome: outcome !== 'all' ? outcome : null,
+          p_source: source !== 'all' ? source : null
+        }),
         supabase.from('dashboard_recent_calls').select('*'),
         supabase.from('dashboard_open_followups').select('*'),
         callsQuery,
